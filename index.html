@@ -481,6 +481,16 @@
         .hidden {
             display: none;
         }
+        
+        .mobile .card {
+            animation: cardFloat 8s ease-in-out infinite, cardAppear 1.5s ease-out !important;
+        }
+        .mobile .heart {
+            animation: heartBeat 2s ease infinite, heartAppear 2s ease-out !important;
+        }
+        .mobile .cloud {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -499,8 +509,9 @@
         <button id="soundToggle"></button>
     </div>
     
-    <audio id="bgMusic" loop>
-        <source src="https://ia600304.us.archive.org/19/items/lullaby_music_box/lullaby.mp3" type="audio/mpeg">
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://drive.google.com/uc?export=download&id=1vRLJ76MQPF5XuVeU83WDcxcZfLCo4Ftq" type="audio/mpeg">
+        <source src="https://www.dropbox.com/scl/fi/2tvmtaqe5pu0d1jrlrzlm/brahms-lullaby.mp3?rlkey=g11r2rts3k7y0nw9k4j0ylxpw&raw=1" type="audio/mpeg">
     </audio>
 
     <script>
@@ -511,34 +522,128 @@
             const music = document.getElementById('bgMusic');
             const soundToggle = document.getElementById('soundToggle');
             let isMusicPlaying = false;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Снижаем качество анимации для мобильных устройств
+            if (isMobile) {
+                // Убираем некоторые эффекты для экономии ресурсов
+                document.querySelectorAll('.falling-sparkle').forEach(el => {
+                    el.remove();
+                });
+                
+                // Ограничиваем количество звездочек
+                const stars = document.querySelectorAll('.star');
+                for (let i = 0; i < stars.length; i++) {
+                    if (i % 3 !== 0) stars[i].remove();
+                }
+                
+                // Упрощаем анимации
+                document.body.classList.add('mobile');
+                
+                // Добавляем специальные стили для мобильных устройств
+                const mobileStyle = document.createElement('style');
+                mobileStyle.textContent = `
+                    .mobile .card {
+                        animation: cardFloat 8s ease-in-out infinite, cardAppear 1.5s ease-out !important;
+                    }
+                    .mobile .heart {
+                        animation: heartBeat 2s ease infinite, heartAppear 2s ease-out !important;
+                    }
+                    .mobile .cloud {
+                        display: none;
+                    }
+                `;
+                document.head.appendChild(mobileStyle);
+            }
+            
+            // Установим иконку звука сразу
+            soundToggle.innerHTML = '🔊';
+            
+            // Предварительная загрузка музыки
+            music.load();
+            
+            // Функция для воспроизведения музыки
+            function playMusic() {
+                music.volume = 0.4;
+                const playPromise = music.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        isMusicPlaying = true;
+                        soundToggle.innerHTML = '🔊';
+                    }).catch(e => {
+                        console.log('Проблема с воспроизведением: ', e);
+                        // Не показываем предупреждение, чтобы не раздражать пользователя
+                    });
+                }
+            }
             
             // Включение/выключение музыки
-            soundToggle.addEventListener('click', function() {
+            soundToggle.addEventListener('click', function(e) {
+                e.stopPropagation(); // Останавливаем всплытие события
+                
                 if (isMusicPlaying) {
                     music.pause();
                     soundToggle.innerHTML = '🔈';
+                    isMusicPlaying = false;
                 } else {
-                    music.volume = 0.5;
-                    music.play();
-                    soundToggle.innerHTML = '';
+                    playMusic();
                 }
-                isMusicPlaying = !isMusicPlaying;
             });
             
-            // Эффект сердца при клике
-            heart.addEventListener('click', function(e) {
-                createHeartBurst(e.pageX, e.pageY);
+            // Эффект сердца при клике - оптимизирован для мобильных устройств
+            function heartClickHandler(e) {
+                if (e.type === 'touchstart') {
+                    e.preventDefault(); // Предотвращаем стандартное поведение только для touch
+                }
+                
+                let x, y;
+                // Определяем координаты для мобильных устройств или ПК
+                if (e.touches && e.touches.length > 0) {
+                    x = e.touches[0].pageX;
+                    y = e.touches[0].pageY;
+                } else {
+                    x = e.pageX || e.clientX;
+                    y = e.pageY || e.clientY;
+                }
+                
+                // Получаем размеры и позицию сердца для центрирования эффекта
+                const heartRect = heart.getBoundingClientRect();
+                const heartX = heartRect.left + heartRect.width / 2;
+                const heartY = heartRect.top + heartRect.height / 2;
+                
+                // Используем центр сердца для эффекта
+                const useX = isMobile ? heartX : x;
+                const useY = isMobile ? heartY : y;
+                
+                // Создаем меньше сердечек на мобильных устройствах
+                const heartCount = isMobile ? 5 : 15;
+                createHeartBurst(useX, useY, heartCount);
+                
                 // Пытаемся запустить музыку при первом взаимодействии
                 if (!isMusicPlaying) {
-                    music.volume = 0.5;
-                    music.play().catch(e => console.log('Автовоспроизведение отключено в браузере'));
-                    isMusicPlaying = true;
-                    soundToggle.innerHTML = '';
+                    playMusic();
                 }
-            });
+            }
             
-            // Добавляем блестки вокруг сердца
-            for (let i = 0; i < 20; i++) {
+            // Добавляем обработчики для разных типов устройств
+            heart.addEventListener('click', heartClickHandler);
+            heart.addEventListener('touchstart', heartClickHandler, { passive: false });
+            
+            // Для мобильных устройств также добавляем обработчик на всю карточку
+            if (isMobile) {
+                card.addEventListener('touchstart', heartClickHandler, { passive: false });
+            }
+            
+            // Пытаемся включить музыку при любом клике на странице
+            document.body.addEventListener('click', function() {
+                if (!isMusicPlaying) {
+                    playMusic();
+                }
+            }, { once: true });
+            
+            // Добавляем блестки вокруг сердца (оптимизировано для мобильных)
+            for (let i = 0; i < (isMobile ? 8 : 20); i++) {
                 const glitter = document.createElement('div');
                 glitter.classList.add('glitter');
                 glitter.style.left = Math.random() * 100 + 'px';
@@ -547,10 +652,11 @@
                 glitter.style.animation = `heartGlitter ${Math.random() * 3 + 2}s ease-in-out infinite`;
                 heart.appendChild(glitter);
             }
-
-            // Добавляем звезды на фон
+            
+            // Добавляем звезды на фон (оптимизировано)
             const starsContainer = document.querySelector('.stars');
-            for (let i = 0; i < 50; i++) {
+            const starCount = isMobile ? 15 : 50;
+            for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
                 star.style.width = `${Math.random() * 4 + 1}px`;
@@ -561,23 +667,32 @@
                 starsContainer.appendChild(star);
             }
             
-            // Добавляем падающие блестки на фон
-            for (let i = 0; i < 30; i++) {
-                const sparkle = document.createElement('div');
-                sparkle.classList.add('falling-sparkle');
-                sparkle.style.left = `${Math.random() * 100}%`;
-                sparkle.style.animationDuration = `${Math.random() * 10 + 5}s`;
-                sparkle.style.animationDelay = `${Math.random() * 5}s`;
-                document.body.appendChild(sparkle);
+            // Добавляем падающие блестки только для настольных компьютеров
+            if (!isMobile) {
+                for (let i = 0; i < 30; i++) {
+                    const sparkle = document.createElement('div');
+                    sparkle.classList.add('falling-sparkle');
+                    sparkle.style.left = `${Math.random() * 100}%`;
+                    sparkle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                    sparkle.style.animationDelay = `${Math.random() * 5}s`;
+                    document.body.appendChild(sparkle);
+                }
+                
+                // Добавляем облака только для настольных компьютеров
+                for (let i = 0; i < 5; i++) {
+                    createCloud();
+                }
+                
+                // Добавляем бабочку только для настольных компьютеров
+                createButterfly();
+                
+                // Эффект искр при движении мышью только для настольных компьютеров
+                document.addEventListener('mousemove', function(e) {
+                    if (Math.random() > 0.95) { // Уменьшаем частоту эффекта
+                        createSparkle(e.pageX, e.pageY);
+                    }
+                });
             }
-            
-            // Добавляем облака
-            for (let i = 0; i < 5; i++) {
-                createCloud();
-            }
-            
-            // Добавляем бабочку
-            createButterfly();
             
             // Создаем эффект постепенного появления элементов
             setTimeout(() => {
@@ -587,13 +702,6 @@
                 document.querySelector('.moon').style.opacity = 1;
                 document.querySelector('.ribbon').style.opacity = 1;
             }, 100);
-            
-            // Движение мыши создает эффект частиц
-            document.addEventListener('mousemove', function(e) {
-                if (Math.random() > 0.9) {
-                    createSparkle(e.pageX, e.pageY);
-                }
-            });
         });
         
         // Функция создания бабочки
@@ -714,9 +822,22 @@
             fadeOut();
         }
         
-        // Функция создания эффекта взрыва сердец
-        function createHeartBurst(x, y) {
-            for (let i = 0; i < 15; i++) {
+        // Функция создания эффекта взрыва сердец - оптимизирована
+        function createHeartBurst(x, y, count = 15) {
+            // Создаем контейнер для сердечек для лучшей производительности
+            const heartsContainer = document.createElement('div');
+            heartsContainer.style.position = 'absolute';
+            heartsContainer.style.left = '0';
+            heartsContainer.style.top = '0';
+            heartsContainer.style.width = '100%';
+            heartsContainer.style.height = '100%';
+            heartsContainer.style.pointerEvents = 'none';
+            heartsContainer.style.zIndex = '100';
+            heartsContainer.style.overflow = 'hidden';
+            document.body.appendChild(heartsContainer);
+            
+            // Создаем и анимируем сердечки
+            for (let i = 0; i < count; i++) {
                 const heart = document.createElement('div');
                 heart.innerHTML = '❤';
                 heart.style.position = 'absolute';
@@ -724,38 +845,43 @@
                 heart.style.top = `${y}px`;
                 heart.style.fontSize = `${Math.random() * 20 + 10}px`;
                 heart.style.color = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 150)}, 0.7)`;
-                heart.style.zIndex = '100';
                 heart.style.pointerEvents = 'none';
+                heart.style.willChange = 'transform, opacity'; // Оптимизация производительности
                 
-                document.body.appendChild(heart);
+                heartsContainer.appendChild(heart);
                 
                 // Случайное направление
                 const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 5 + 2;
+                const speed = Math.random() * 4 + 2; // Немного снижаем скорость
                 const vx = Math.cos(angle) * speed;
                 const vy = Math.sin(angle) * speed;
                 
                 let hx = x;
                 let hy = y;
                 let opacity = 1;
+                let scale = 1;
                 
                 function animateHeart() {
                     hx += vx;
                     hy += vy;
                     opacity -= 0.02;
+                    scale += 0.01;
                     
-                    heart.style.left = `${hx}px`;
-                    heart.style.top = `${hy}px`;
+                    heart.style.transform = `translate(${hx - x}px, ${hy - y}px) scale(${scale})`;
                     heart.style.opacity = opacity;
                     
                     if (opacity > 0) {
                         requestAnimationFrame(animateHeart);
                     } else {
                         heart.remove();
+                        // Если все сердечки исчезли, удаляем контейнер
+                        if (heartsContainer.children.length === 0) {
+                            heartsContainer.remove();
+                        }
                     }
                 }
                 
-                animateHeart();
+                requestAnimationFrame(animateHeart);
             }
         }
 
