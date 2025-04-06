@@ -506,23 +506,55 @@
     </div>
     
     <div id="controls">
-        <button id="soundToggle"></button>
+        <button id="soundToggle">🔊</button>
     </div>
     
-    <audio id="bgMusic" loop preload="auto">
-        <source src="https://drive.google.com/uc?export=download&id=1vRLJ76MQPF5XuVeU83WDcxcZfLCo4Ftq" type="audio/mpeg">
-        <source src="https://www.dropbox.com/scl/fi/2tvmtaqe5pu0d1jrlrzlm/brahms-lullaby.mp3?rlkey=g11r2rts3k7y0nw9k4j0ylxpw&raw=1" type="audio/mpeg">
+    <!-- Аудио-элемент для воспроизведения локальной музыки -->
+    <audio id="bgMusic" loop preload="auto" autoplay>
+        <source src="[muzrecord.com] Madk1d & Тёмный принц - Ты че обиделась.mp3" type="audio/mpeg">
     </audio>
-
+    
     <script>
         // Звездное небо и другие эффекты
         document.addEventListener('DOMContentLoaded', function() {
             const heart = document.querySelector('.heart');
             const card = document.querySelector('.card');
-            const music = document.getElementById('bgMusic');
             const soundToggle = document.getElementById('soundToggle');
-            let isMusicPlaying = false;
+            const music = document.getElementById('bgMusic');
+            let isMusicPlaying = true; // По умолчанию музыка включена
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Функция для воспроизведения музыки при взаимодействии
+            function playMusic() {
+                music.volume = 0.5;
+                const playPromise = music.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {
+                        console.log('Проблема с воспроизведением:', e);
+                    });
+                }
+            }
+            
+            // Массив всех возможных событий взаимодействия с пользователем
+            const userInteractionEvents = ['click', 'touchstart', 'keydown', 'scroll', 'mousemove'];
+            
+            // Добавляем обработчики для всех типов взаимодействия
+            userInteractionEvents.forEach(event => {
+                document.addEventListener(event, function initAudio() {
+                    playMusic();
+                    // Удаляем все обработчики после первого воспроизведения
+                    userInteractionEvents.forEach(evt => {
+                        document.removeEventListener(evt, initAudio);
+                    });
+                }, { once: true, passive: true });
+            });
+            
+            // Пробуем запустить музыку сразу
+            playMusic();
+            
+            // Пробуем снова через секунду (для более надежного запуска)
+            setTimeout(playMusic, 1000);
             
             // Снижаем качество анимации для мобильных устройств
             if (isMobile) {
@@ -556,40 +588,28 @@
                 document.head.appendChild(mobileStyle);
             }
             
-            // Установим иконку звука сразу
-            soundToggle.innerHTML = '🔊';
-            
-            // Предварительная загрузка музыки
-            music.load();
-            
-            // Функция для воспроизведения музыки
-            function playMusic() {
-                music.volume = 0.4;
-                const playPromise = music.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        isMusicPlaying = true;
-                        soundToggle.innerHTML = '🔊';
-                    }).catch(e => {
-                        console.log('Проблема с воспроизведением: ', e);
-                        // Не показываем предупреждение, чтобы не раздражать пользователя
-                    });
-                }
-            }
-            
-            // Включение/выключение музыки
+            // Кнопка включения/выключения звука
             soundToggle.addEventListener('click', function(e) {
-                e.stopPropagation(); // Останавливаем всплытие события
+                e.stopPropagation();
                 
                 if (isMusicPlaying) {
+                    // Останавливаем музыку
                     music.pause();
+                    
                     soundToggle.innerHTML = '🔈';
                     isMusicPlaying = false;
                 } else {
-                    playMusic();
+                    // Включаем музыку
+                    music.play().catch(e => console.log('Не удалось воспроизвести:', e));
+                    
+                    soundToggle.innerHTML = '🔊';
+                    isMusicPlaying = true;
                 }
             });
+            
+            // При клике на карточку или сердце тоже пытаемся запустить воспроизведение
+            card.addEventListener('click', playMusic, { once: true });
+            heart.addEventListener('click', playMusic, { once: true });
             
             // Эффект сердца при клике - оптимизирован для мобильных устройств
             function heartClickHandler(e) {
@@ -620,9 +640,11 @@
                 const heartCount = isMobile ? 5 : 15;
                 createHeartBurst(useX, useY, heartCount);
                 
-                // Пытаемся запустить музыку при первом взаимодействии
+                // Если музыка еще не играет, пробуем включить
                 if (!isMusicPlaying) {
-                    playMusic();
+                    music.play().catch(e => console.log('Не удалось воспроизвести:', e));
+                    soundToggle.innerHTML = '🔊';
+                    isMusicPlaying = true;
                 }
             }
             
@@ -634,13 +656,6 @@
             if (isMobile) {
                 card.addEventListener('touchstart', heartClickHandler, { passive: false });
             }
-            
-            // Пытаемся включить музыку при любом клике на странице
-            document.body.addEventListener('click', function() {
-                if (!isMusicPlaying) {
-                    playMusic();
-                }
-            }, { once: true });
             
             // Добавляем блестки вокруг сердца (оптимизировано для мобильных)
             for (let i = 0; i < (isMobile ? 8 : 20); i++) {
