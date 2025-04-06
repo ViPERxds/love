@@ -18,6 +18,7 @@
             animation: gradientBG 15s ease infinite;
             font-family: 'Comfortaa', cursive;
             overflow: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ff3e88"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
         }
         
         @keyframes gradientBG {
@@ -34,11 +35,11 @@
         
         .card {
             position: relative;
-            width: 300px;
-            height: 420px;
+            width: 340px;
+            height: 480px;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
+            border-radius: 30px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             display: flex;
@@ -49,6 +50,12 @@
             perspective: 1000px;
             animation: cardFloat 6s ease-in-out infinite, cardAppear 1.5s ease-out;
             border: 2px solid rgba(255, 192, 203, 0.5);
+            transition: transform 0.5s, box-shadow 0.5s;
+        }
+        
+        .card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2), 0 0 40px rgba(255, 105, 180, 0.6);
         }
         
         @keyframes cardFloat {
@@ -75,11 +82,17 @@
         
         .heart {
             position: relative;
-            width: 100px;
-            height: 90px;
+            width: 120px;
+            height: 110px;
             margin: 30px auto;
             animation: heartBeat 1.5s ease infinite, heartFloat 6s ease-in-out infinite, heartAppear 2s ease-out;
             transform-origin: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .heart:hover {
+            transform: scale(1.2);
         }
         
         @keyframes heartAppear {
@@ -100,16 +113,16 @@
         .heart:after {
             position: absolute;
             content: "";
-            left: 50px;
+            left: 60px;
             top: 0;
-            width: 50px;
-            height: 80px;
+            width: 60px;
+            height: 100px;
             background: #ff3e88;
-            border-radius: 50px 50px 0 0;
+            border-radius: 60px 60px 0 0;
             transform: rotate(-45deg);
             transform-origin: 0 100%;
-            box-shadow: 0 0 20px #ff3e88;
-            filter: drop-shadow(0 0 10px rgba(255, 0, 128, 0.5));
+            box-shadow: 0 0 30px #ff3e88;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 128, 0.7));
         }
         
         .heart:after {
@@ -123,13 +136,13 @@
                 transform: scale(1);
             }
             14% {
-                transform: scale(1.1);
+                transform: scale(1.2);
             }
             28% {
                 transform: scale(1);
             }
             42% {
-                transform: scale(1.1);
+                transform: scale(1.2);
             }
             70% {
                 transform: scale(1);
@@ -147,12 +160,13 @@
         
         .glitter {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             background: white;
             border-radius: 50%;
-            box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+            box-shadow: 0 0 15px #fff, 0 0 25px #fff;
             opacity: 0;
+            z-index: 10;
         }
         
         .message {
@@ -186,17 +200,17 @@
         
         h1 {
             color: #ff3e88;
-            font-size: 32px;
+            font-size: 38px;
             margin-bottom: 10px;
             font-weight: bold;
             letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(255, 62, 136, 0.5);
+            text-shadow: 0 0 15px rgba(255, 62, 136, 0.7);
         }
         
         p {
             color: #8a5298;
-            font-size: 22px;
-            margin-top: 5px;
+            font-size: 24px;
+            margin-top: 10px;
             font-weight: bold;
             letter-spacing: 1px;
         }
@@ -215,6 +229,7 @@
             background: #fff;
             border-radius: 50%;
             animation: starTwinkle 4s infinite;
+            filter: drop-shadow(0 0 2px #fff);
         }
         
         @keyframes starTwinkle {
@@ -236,6 +251,7 @@
             border-radius: 50%;
             box-shadow: 0 0 10px #fff, 0 0 15px #ff9ac1;
             animation: fallingSparkle linear infinite;
+            z-index: -1;
         }
         
         @keyframes fallingSparkle {
@@ -253,13 +269,25 @@
             position: absolute;
             top: 40px;
             right: 40px;
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             background: #fffce8;
             border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255, 252, 232, 0.8);
+            box-shadow: 0 0 30px rgba(255, 252, 232, 0.9);
             z-index: -1;
             animation: moonGlow 4s infinite alternate, moonAppear 3s ease-out;
+        }
+        
+        .moon:after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: rgba(255, 252, 232, 0.4);
+            box-shadow: 0 0 5px rgba(255, 252, 232, 0.4);
         }
         
         @keyframes moonAppear {
@@ -279,8 +307,8 @@
                 transform: scale(1);
             }
             100% {
-                box-shadow: 0 0 40px rgba(255, 252, 232, 0.9);
-                transform: scale(1.05);
+                box-shadow: 0 0 50px rgba(255, 252, 232, 0.9);
+                transform: scale(1.08);
             }
         }
         
@@ -319,15 +347,22 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            width: 220px;
-            height: 40px;
+            width: 240px;
+            height: 50px;
             background: linear-gradient(to right, #ff9fd9, #ff6ebc);
-            border-radius: 20px;
+            border-radius: 25px;
             display: flex;
             justify-content: center;
             align-items: center;
             box-shadow: 0 5px 15px rgba(255, 110, 188, 0.4);
             animation: ribbonGlow 3s infinite alternate, ribbonAppear 3s ease-out;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .ribbon:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 110, 188, 0.7);
         }
         
         @keyframes ribbonGlow {
@@ -356,10 +391,95 @@
         
         .ribbon span {
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             letter-spacing: 1px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .butterfly {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .butterfly .wings {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            transform-origin: center;
+            animation: butterflyWings 0.3s ease-in-out infinite alternate;
+        }
+        
+        .butterfly .wing {
+            position: absolute;
+            width: 15px;
+            height: 20px;
+            background: linear-gradient(45deg, #ff9fd9, #ff6ebc);
+            border-radius: 50% 50% 0 50%;
+            opacity: 0.9;
+        }
+        
+        .butterfly .wing.left {
+            left: 0;
+            transform: rotate(-30deg);
+            box-shadow: 0 0 10px rgba(255, 110, 188, 0.5);
+        }
+        
+        .butterfly .wing.right {
+            right: 0;
+            transform: rotate(30deg) scaleX(-1);
+            box-shadow: 0 0 10px rgba(255, 110, 188, 0.5);
+        }
+        
+        @keyframes butterflyWings {
+            0% {
+                transform: scaleX(0.8);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 100;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        #controls:hover {
+            opacity: 1;
+        }
+        
+        #soundToggle {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            outline: none;
+            transition: background 0.3s;
+        }
+        
+        #soundToggle:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -374,12 +494,50 @@
         <div class="stars"></div>
         <div class="ribbon"><span>❤ 11:11 ❤</span></div>
     </div>
+    
+    <div id="controls">
+        <button id="soundToggle"></button>
+    </div>
+    
+    <audio id="bgMusic" loop>
+        <source src="https://ia600304.us.archive.org/19/items/lullaby_music_box/lullaby.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        // Создаем блестки и звезды
+        // Звездное небо и другие эффекты
         document.addEventListener('DOMContentLoaded', function() {
-            // Добавляем блестки вокруг сердца
             const heart = document.querySelector('.heart');
+            const card = document.querySelector('.card');
+            const music = document.getElementById('bgMusic');
+            const soundToggle = document.getElementById('soundToggle');
+            let isMusicPlaying = false;
+            
+            // Включение/выключение музыки
+            soundToggle.addEventListener('click', function() {
+                if (isMusicPlaying) {
+                    music.pause();
+                    soundToggle.innerHTML = '🔈';
+                } else {
+                    music.volume = 0.5;
+                    music.play();
+                    soundToggle.innerHTML = '';
+                }
+                isMusicPlaying = !isMusicPlaying;
+            });
+            
+            // Эффект сердца при клике
+            heart.addEventListener('click', function(e) {
+                createHeartBurst(e.pageX, e.pageY);
+                // Пытаемся запустить музыку при первом взаимодействии
+                if (!isMusicPlaying) {
+                    music.volume = 0.5;
+                    music.play().catch(e => console.log('Автовоспроизведение отключено в браузере'));
+                    isMusicPlaying = true;
+                    soundToggle.innerHTML = '';
+                }
+            });
+            
+            // Добавляем блестки вокруг сердца
             for (let i = 0; i < 20; i++) {
                 const glitter = document.createElement('div');
                 glitter.classList.add('glitter');
@@ -418,6 +576,9 @@
                 createCloud();
             }
             
+            // Добавляем бабочку
+            createButterfly();
+            
             // Создаем эффект постепенного появления элементов
             setTimeout(() => {
                 document.querySelector('.card').style.opacity = 1;
@@ -426,7 +587,70 @@
                 document.querySelector('.moon').style.opacity = 1;
                 document.querySelector('.ribbon').style.opacity = 1;
             }, 100);
+            
+            // Движение мыши создает эффект частиц
+            document.addEventListener('mousemove', function(e) {
+                if (Math.random() > 0.9) {
+                    createSparkle(e.pageX, e.pageY);
+                }
+            });
         });
+        
+        // Функция создания бабочки
+        function createButterfly() {
+            const butterfly = document.createElement('div');
+            butterfly.classList.add('butterfly');
+            
+            const wings = document.createElement('div');
+            wings.classList.add('wings');
+            
+            const leftWing = document.createElement('div');
+            leftWing.classList.add('wing', 'left');
+            
+            const rightWing = document.createElement('div');
+            rightWing.classList.add('wing', 'right');
+            
+            wings.appendChild(leftWing);
+            wings.appendChild(rightWing);
+            butterfly.appendChild(wings);
+            
+            document.body.appendChild(butterfly);
+            
+            animateButterfly(butterfly);
+        }
+        
+        // Анимация движения бабочки
+        function animateButterfly(butterfly) {
+            let x = Math.random() * window.innerWidth;
+            let y = Math.random() * window.innerHeight;
+            let targetX = Math.random() * window.innerWidth;
+            let targetY = Math.random() * window.innerHeight;
+            
+            butterfly.style.left = `${x}px`;
+            butterfly.style.top = `${y}px`;
+            
+            function move() {
+                // Вычисляем направление движения
+                let dx = (targetX - x) * 0.01;
+                let dy = (targetY - y) * 0.01;
+                
+                x += dx;
+                y += dy;
+                
+                butterfly.style.left = `${x}px`;
+                butterfly.style.top = `${y}px`;
+                
+                // Если бабочка близко к цели, задаем новую цель
+                if (Math.abs(targetX - x) < 10 && Math.abs(targetY - y) < 10) {
+                    targetX = Math.random() * window.innerWidth;
+                    targetY = Math.random() * window.innerHeight;
+                }
+                
+                requestAnimationFrame(move);
+            }
+            
+            move();
+        }
         
         // Функция создания облаков
         function createCloud() {
@@ -456,6 +680,83 @@
                 cloud.remove();
                 createCloud();
             }, (duration + 20) * 1000);
+        }
+        
+        // Функция создания искр при наведении
+        function createSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('glitter');
+            sparkle.style.left = `${x}px`;
+            sparkle.style.top = `${y}px`;
+            sparkle.style.position = 'absolute';
+            sparkle.style.animation = 'none';
+            sparkle.style.opacity = '1';
+            
+            document.body.appendChild(sparkle);
+            
+            // Анимируем затухание
+            let opacity = 1;
+            let scale = 1;
+            
+            function fadeOut() {
+                opacity -= 0.05;
+                scale += 0.05;
+                sparkle.style.opacity = opacity;
+                sparkle.style.transform = `scale(${scale})`;
+                
+                if (opacity > 0) {
+                    requestAnimationFrame(fadeOut);
+                } else {
+                    sparkle.remove();
+                }
+            }
+            
+            fadeOut();
+        }
+        
+        // Функция создания эффекта взрыва сердец
+        function createHeartBurst(x, y) {
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤';
+                heart.style.position = 'absolute';
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+                heart.style.fontSize = `${Math.random() * 20 + 10}px`;
+                heart.style.color = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 150)}, 0.7)`;
+                heart.style.zIndex = '100';
+                heart.style.pointerEvents = 'none';
+                
+                document.body.appendChild(heart);
+                
+                // Случайное направление
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+                
+                let hx = x;
+                let hy = y;
+                let opacity = 1;
+                
+                function animateHeart() {
+                    hx += vx;
+                    hy += vy;
+                    opacity -= 0.02;
+                    
+                    heart.style.left = `${hx}px`;
+                    heart.style.top = `${hy}px`;
+                    heart.style.opacity = opacity;
+                    
+                    if (opacity > 0) {
+                        requestAnimationFrame(animateHeart);
+                    } else {
+                        heart.remove();
+                    }
+                }
+                
+                animateHeart();
+            }
         }
 
         // Анимация для блесток
